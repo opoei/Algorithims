@@ -91,9 +91,6 @@ def kadanes(input_arr):
 
 def main(argv):
     opts, args = getopt.getopt(argv,"n:i:")
-    if len(sys.argv) != 2:
-            print("Usage: project1.py -n <Algorithim #> -i <inputfile>")
-            return(1)
 
     for opt, arg in opts:
         if opt == '-n':
