@@ -17,7 +17,6 @@ def ChangeSlow(coinList, amount):
                 temp[coin_array.index(coin)] += 1
                 if sum(minCoins) > sum(temp):
                     minCoins = temp
-                    bestSum = temp
         return (minCoins)
         
     minCoins = recursion(coinList, amount)
