@@ -82,7 +82,7 @@ def changedp(coins, amount):
     listcoins(coinsUsed,amount,usedNum, coins)
     f = open(output_filename, 'a')
     f.write("CHANGEDP ALGORITHM\n")
-    f.writelines([str(coins), "\n", str(minCoins), "\n", str(minCoins), "\n"])
+    f.writelines([str(coins), "\n", str(usedNum), "\n", str(minCoins), "\n"])
     f.close()
 
 
