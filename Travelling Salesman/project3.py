@@ -6,9 +6,9 @@ import numpy as np
 def parse_input(ifile):
     f = open(ifile, 'r') 
     #get linecount
-    for count, _ in enumerate(f):
+    for count,_ in enumerate(f):
         pass
-    count += 1 #enumerate comes one short
+    count += 1 #count comes one short
     global linecount 
     linecount = count
 
@@ -27,27 +27,60 @@ def parse_input(ifile):
                 inner_lat = int(line[1])
                 inner_long = int(line[2])
                 adj_arr[i][j] = round(math.hypot(outer_lat - inner_lat, outer_long - inner_long)) #round off per requirements
-    print(np.matrix(adj_arr))
 
-def furthest_insertion():
+def farthest_insertion():
     #start at node 0
     travel_list = []
     travel_list.append(0)
     
-    #find furthest node from elements in travel_list 
-    def furthest_node():
+    #return farthest node from elements in travel_list 
+    def farthest_node():
         max_distance = 0
         idx = 0
         for node in travel_list:
             for ctr in range(0,linecount):
-                if adj_arr[node][ctr] > max_distance:
-                    print(adj_arr[0][ctr])
+                if ctr in travel_list:
+                    pass
+                elif adj_arr[node][ctr] > max_distance:
                     max_distance = adj_arr[0][ctr]
                     idx = ctr
-        travel_list.append(idx)
-        print(travel_list)
+        return idx
 
-    furthest_node()
+
+    #find the closest edge for a given node
+    # im trying to minimize the distance to accomodate for the newly inserted node
+    def closest_edge(node):
+        n1_idx = -1 
+        n2_idx = -1
+        curr_min = sys.maxsize
+        #print(travel_list)
+        #print("end of list:",travel_list[-1])
+        
+
+        for elem in travel_list:
+#            print("current:", elem)
+            if elem == linecount-1:
+               if adj_arr[node][elem] + adj_arr[node][0] < curr_min:
+                    curr_min = adj_arr[node][elem] + adj_arr[node][0] 
+                    n1_idx = elem
+                    n2_idx = elem+1
+            elif adj_arr[node][elem] + adj_arr[node][elem+1] < curr_min:
+                curr_min = adj_arr[node][elem] + adj_arr[node][elem+1] 
+                n1_idx = elem
+                n2_idx = elem+1
+        #"delete edge" between n1 and n2, insert node
+        travel_list.insert(n2_idx, node)
+
+    #start with a triangle    
+    n = farthest_node()
+    travel_list.append(n)
+    n = farthest_node()
+    travel_list.append(n)
+
+    while(len(travel_list) < linecount -1 ):
+        n = farthest_node()
+        closest_edge(n)
+    print(travel_list)
 
 def main(argv):
     opts, args = getopt.getopt(argv,"n:i:")
@@ -55,7 +88,7 @@ def main(argv):
     for opt, arg in opts:
         if opt == '-i':
                 parse_input(arg)
-                furthest_insertion()
+                farthest_insertion()
         else:
             print("Usage: project3.py -i <inputfile>")
 
