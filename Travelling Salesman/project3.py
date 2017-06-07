@@ -15,6 +15,8 @@ def parse_input(ifile):
     #init adjacency list
     global adj_arr
     adj_arr = [[0] * linecount for i in range(linecount)]
+
+    #compute distances into adjacency list
     for i in range(0,linecount):
         line = (linecache.getline(ifile, i+1)).split(" ")
         outer_lat = int(line[1])
@@ -28,6 +30,7 @@ def parse_input(ifile):
                 inner_long = int(line[2])
                 adj_arr[i][j] = round(math.hypot(outer_lat - inner_lat, outer_long - inner_long)) #round off per requirements
     f.close()
+#    np.print(adj_arr)
 
 def farthest_insertion():
     #start at node 0
@@ -78,18 +81,30 @@ def farthest_insertion():
     n = farthest_node()
     travel_list.append(n)
 
-    while(len(travel_list) < linecount -1 ):
+    while(len(travel_list) < linecount):
         n = farthest_node()
         closest_edge(n)
     return travel_list
 
-def calc_tour_len(tour_list):
-    for elem in tour_list:
+def calc_tour_len(ifile, tour_list):
+    distance = 0
+    f = open(ifile, 'r')
+    for i,j in zip(tour_list, tour_list[1:]):
+        line = (linecache.getline(ifile, i+1)).split(" ")
+        line2 = (linecache.getline(ifile, j+1)).split( " " )
+        distance += round(math.hypot(int(line2[1]) - int(line[1]) , int(line2[2]) - int(line[2]))) #round off per requirements
+        print(distance)
+    #calcuate cost returning from last node to first
+    line = (linecache.getline(ifile, tour_list[-1]+1)).split(" ")
+    line2 = (linecache.getline(ifile, tour_list[0]+1)).split( " " )
+    distance += round(math.hypot(int(line2[1]) - int(line[1]) , int(line2[2]) - int(line[2]))) #round off per requirements
+    f.close()
+    return(distance)
+
         
-
-
-def write_tour(travel_list, ofile):
+def write_tour(distance, travel_list, ofile):
     with open(ofile, 'w') as f:
+        f.write(str(distance) + '\n')
         for elem in travel_list:
             f.write(str(elem) + '\n')
 
@@ -100,7 +115,9 @@ def main(argv):
         if opt == '-i':
                 parse_input(arg)
                 travel_list = farthest_insertion()
-                write_tour(travel_list, arg +'.out') #temporarily naming it .out since .tour conflicts with solutions
+                print(travel_list)
+                distance = calc_tour_len(arg, travel_list)
+                write_tour(distance,travel_list, arg +'.out') #temporarily naming it .out since .tour conflicts with solutions
         else:
             print("Usage: project3.py -i <inputfile>")
 
