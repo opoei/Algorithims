@@ -27,6 +27,7 @@ def parse_input(ifile):
                 inner_lat = int(line[1])
                 inner_long = int(line[2])
                 adj_arr[i][j] = round(math.hypot(outer_lat - inner_lat, outer_long - inner_long)) #round off per requirements
+    f.close()
 
 def farthest_insertion():
     #start at node 0
@@ -80,7 +81,17 @@ def farthest_insertion():
     while(len(travel_list) < linecount -1 ):
         n = farthest_node()
         closest_edge(n)
-    print(travel_list)
+    return travel_list
+
+def calc_tour_len(tour_list):
+    for elem in tour_list:
+        
+
+
+def write_tour(travel_list, ofile):
+    with open(ofile, 'w') as f:
+        for elem in travel_list:
+            f.write(str(elem) + '\n')
 
 def main(argv):
     opts, args = getopt.getopt(argv,"n:i:")
@@ -88,7 +99,8 @@ def main(argv):
     for opt, arg in opts:
         if opt == '-i':
                 parse_input(arg)
-                farthest_insertion()
+                travel_list = farthest_insertion()
+                write_tour(travel_list, arg +'.out') #temporarily naming it .out since .tour conflicts with solutions
         else:
             print("Usage: project3.py -i <inputfile>")
 
