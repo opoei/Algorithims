@@ -8,7 +8,7 @@ def parse_input(ifile):
     #get linecount
     for count,_ in enumerate(f):
         pass
-    count += 1 #count comes one short
+    count += 1 # our inputs count starting at zero. Some functions index at zero, some at one. 
     global linecount 
     linecount = count
 
@@ -30,61 +30,7 @@ def parse_input(ifile):
                 inner_long = int(line[2])
                 adj_arr[i][j] = round(math.hypot(outer_lat - inner_lat, outer_long - inner_long)) #round off per requirements
     f.close()
-#    np.print(adj_arr)
-
-def farthest_insertion():
-    #start at node 0
-    travel_list = []
-    travel_list.append(0)
-    
-    #return farthest node from elements in travel_list 
-    def farthest_node():
-        max_distance = 0
-        idx = 0
-        for node in travel_list:
-            for ctr in range(0,linecount):
-                if ctr in travel_list:
-                    pass
-                elif adj_arr[node][ctr] > max_distance:
-                    max_distance = adj_arr[0][ctr]
-                    idx = ctr
-        return idx
-
-
-    #find the closest edge for a given node
-    # im trying to minimize the distance to accomodate for the newly inserted node
-    def closest_edge(node):
-        n1_idx = -1 
-        n2_idx = -1
-        curr_min = sys.maxsize
-        #print(travel_list)
-        #print("end of list:",travel_list[-1])
-        
-
-        for elem in travel_list:
-#            print("current:", elem)
-            if elem == linecount-1:
-               if adj_arr[node][elem] + adj_arr[node][0] < curr_min:
-                    curr_min = adj_arr[node][elem] + adj_arr[node][0] 
-                    n1_idx = elem
-                    n2_idx = elem+1
-            elif adj_arr[node][elem] + adj_arr[node][elem+1] < curr_min:
-                curr_min = adj_arr[node][elem] + adj_arr[node][elem+1] 
-                n1_idx = elem
-                n2_idx = elem+1
-        #"delete edge" between n1 and n2, insert node
-        travel_list.insert(n2_idx, node)
-
-    #start with a triangle    
-    n = farthest_node()
-    travel_list.append(n)
-    n = farthest_node()
-    travel_list.append(n)
-
-    while(len(travel_list) < linecount):
-        n = farthest_node()
-        closest_edge(n)
-    return travel_list
+    print(np.array(adj_arr))
 
 def calc_tour_len(ifile, tour_list):
     distance = 0
@@ -93,7 +39,6 @@ def calc_tour_len(ifile, tour_list):
         line = (linecache.getline(ifile, i+1)).split(" ")
         line2 = (linecache.getline(ifile, j+1)).split( " " )
         distance += round(math.hypot(int(line2[1]) - int(line[1]) , int(line2[2]) - int(line[2]))) #round off per requirements
-        print(distance)
     #calcuate cost returning from last node to first
     line = (linecache.getline(ifile, tour_list[-1]+1)).split(" ")
     line2 = (linecache.getline(ifile, tour_list[0]+1)).split( " " )
@@ -107,6 +52,60 @@ def write_tour(distance, travel_list, ofile):
         f.write(str(distance) + '\n')
         for elem in travel_list:
             f.write(str(elem) + '\n')
+
+def farthest_insertion():
+    #start at node 0
+    travel_list = [0]
+    
+    #return farthest node from elements in travel_list, that is currently not in travel_list 
+    def farthest_node():
+        max_distance = 0
+        far_node = 0
+        for node in travel_list:
+            for ctr in range(0,linecount-1):
+                if ctr in travel_list:
+                    pass
+                elif adj_arr[node][ctr] > max_distance:
+                    max_distance = adj_arr[node][ctr]
+                    far_node = ctr
+        return far_node 
+
+
+    #find the closest edge for a given node
+    def closest_edge(node):
+        ins_pt = 0
+        curr_min = sys.maxsize
+        #print(travel_list)
+        #print("end of list:",travel_list[-1])
+        
+        # go pairwise through the travel list, 
+        # take the minimum distance needed to accomodate for the newly inserted node
+        for i,j in zip(travel_list, travel_list[1:]):
+            if adj_arr[node][i] + adj_arr[node][j] < curr_min:
+                curr_min = adj_arr[node][i] + adj_arr[node][j]
+                ins_pt = travel_list.index(j) #update insertion point
+        #check the connection from the tail to the front
+        if adj_arr[node][travel_list[-1]] + adj_arr[node][travel_list[0]] < curr_min:
+            curr_min = adj_arr[node][travel_list[-1]] + adj_arr[node][travel_list[0]]
+            ins_pt = travel_list[0]
+        #insert new node 
+        travel_list.insert(ins_pt, node)
+
+    #start with a triangle    
+    n = farthest_node()
+    print(n)
+    travel_list.append(n)
+    n = farthest_node()
+    print(n)
+    travel_list.append(n)
+
+    while(len(travel_list) < linecount):
+        n = farthest_node()
+        if n in travel_list: # in here for prosperity, could exit nicely with linecount -1
+            break            # but i've been chasing this bug all day....
+        print(n)
+        closest_edge(n)
+    return travel_list
 
 def main(argv):
     opts, args = getopt.getopt(argv,"n:i:")
