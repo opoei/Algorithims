@@ -57,7 +57,8 @@ def farthest_insertion():
     #start at node 0
     travel_list = [0]
     
-    #return farthest node from elements in travel_list, that is currently not in travel_list 
+    # return farthest node from elements in travel_list, that is currently not in travel_list 
+    # WARNING: If called after all nodes have been visited, will return 0!
     def farthest_node():
         max_distance = 0
         far_node = 0
@@ -78,7 +79,7 @@ def farthest_insertion():
         #print(travel_list)
         #print("end of list:",travel_list[-1])
         
-        # go pairwise through the travel list, 
+        # go pairwise through the travel list (traverse all edges) , 
         # take the minimum distance needed to accomodate for the newly inserted node
         for i,j in zip(travel_list, travel_list[1:]):
             if adj_arr[node][i] + adj_arr[node][j] < curr_min:
@@ -93,17 +94,14 @@ def farthest_insertion():
 
     #start with a triangle    
     n = farthest_node()
-    print(n)
     travel_list.append(n)
     n = farthest_node()
-    print(n)
     travel_list.append(n)
 
     while(len(travel_list) < linecount):
         n = farthest_node()
-        if n in travel_list: # in here for prosperity, could exit nicely with linecount -1
+        if n in travel_list: # in here for prosperity, could exit nicely with linecount-1
             break            # but i've been chasing this bug all day....
-        print(n)
         closest_edge(n)
     return travel_list
 
