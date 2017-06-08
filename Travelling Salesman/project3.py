@@ -1,5 +1,4 @@
 import sys, getopt, linecache, math
-import numpy as np
 # lets parse the input into a adjacency list, each distance caluclation 
 # will likely need to be performed at least once, may as well do the calculation upfront
 # could simplify this by computing upper or lower triangle since it's mirrored over the diagonal
@@ -30,7 +29,6 @@ def parse_input(ifile):
                 inner_long = int(line[2])
                 adj_arr[i][j] = round(math.hypot(outer_lat - inner_lat, outer_long - inner_long)) #round off per requirements
     f.close()
-    print(np.array(adj_arr))
 
 def calc_tour_len(ifile, tour_list):
     distance = 0
@@ -58,7 +56,7 @@ def farthest_insertion():
     travel_list = [0]
     
     # return farthest node from elements in travel_list, that is currently not in travel_list 
-    # WARNING: If called after all nodes have been visited, will return 0!
+    # WARNING: If called after all nodes have been visited, it will return 0 aka the first node!
     def farthest_node():
         max_distance = 0
         far_node = 0
@@ -98,10 +96,10 @@ def farthest_insertion():
     n = farthest_node()
     travel_list.append(n)
 
-    while(len(travel_list) < linecount):
+    while True:
+        if len(travel_list) == linecount:
+           break 
         n = farthest_node()
-        if n in travel_list: # in here for prosperity, could exit nicely with linecount-1
-            break            # but i've been chasing this bug all day....
         closest_edge(n)
     return travel_list
 
