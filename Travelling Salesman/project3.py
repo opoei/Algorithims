@@ -56,10 +56,10 @@ def farthest_insertion():
     travel_list = [0]
     
     # return farthest node from elements in travel_list, that is currently not in travel_list 
-    # WARNING: If called after all nodes have been visited, it will return 0 aka the first node!
+    # WARNING: If called after all nodes have been visited, it will return -1 !
     def farthest_node():
         max_distance = 0
-        far_node = 0
+        far_node = -1 
         for node in travel_list:
             for ctr in range(0,linecount-1):
                 if ctr in travel_list:
@@ -67,6 +67,7 @@ def farthest_insertion():
                 elif adj_arr[node][ctr] > max_distance:
                     max_distance = adj_arr[node][ctr]
                     far_node = ctr
+        print(far_node)
         return far_node 
 
 
@@ -92,14 +93,18 @@ def farthest_insertion():
 
     #start with a triangle    
     n = farthest_node()
+    print(n)
     travel_list.append(n)
     n = farthest_node()
+    print(n)
     travel_list.append(n)
 
     while True:
         if len(travel_list) == linecount:
            break 
         n = farthest_node()
+        if n == -1:
+           break 
         closest_edge(n)
     return travel_list
 
