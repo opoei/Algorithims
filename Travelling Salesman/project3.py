@@ -1,5 +1,7 @@
+
 import sys, getopt, linecache, math
-import numpy as np
+#import numpy as np
+
 # lets parse the input into a adjacency list, each distance caluclation 
 # will likely need to be performed at least once, may as well do the calculation upfront
 # could simplify this by computing upper or lower triangle since it's mirrored over the diagonal
@@ -29,7 +31,7 @@ def parse_input(ifile):
                 inner_lat = int(line[1])
                 inner_long = int(line[2])
                 adj_arr[i][j] = round(math.hypot(outer_lat - inner_lat, outer_long - inner_long)) #round off per requirements
-    print(np.array(adj_arr))
+    #print(np.array(adj_arr))
     f.close()
 
 def calc_tour_len(ifile, tour_list):
@@ -53,27 +55,28 @@ def write_tour(distance, travel_list, ofile):
         for elem in travel_list:
             f.write(str(elem) + '\n')
 
-def farthest_insertion():
+def nearest_insertion():
     #start at node 0
     travel_list = [0]
     
-    # return farthest node from elements in travel_list, that is currently not in travel_list 
+    # return closest node from elements in travel_list, that is currently not in travel_list 
     # WARNING: If called after all nodes have been visited, it will return -1 !
-    def farthest_node():
-        max_distance = 0
-        far_node = -1 
+    # Two modifications need to be made to make this furthest insertion. max_distance = 0  and adj_arr[node][ctr] > max_distance
+    # Based on the example cases, it was found that nearest_insertion performed much better
+    def nearest_node():
+        max_distance = sys.maxsize
+        near_node = -1 
         for node in travel_list:
             for ctr in range(linecount):
                 if ctr in travel_list:
                     pass 
-                elif adj_arr[node][ctr] > max_distance:
+                elif adj_arr[node][ctr] < max_distance:
                     max_distance = adj_arr[node][ctr]
-                    far_node = ctr
-        print(far_node)
-        return far_node 
+                    near_node = ctr
+        return near_node 
 
 
-    #find the closest edge for a given node
+    #find the closest edge for a given node, insert the node. 
     def closest_edge(node):
         ins_pt = 0
         curr_min = sys.maxsize
@@ -87,24 +90,21 @@ def farthest_insertion():
                 curr_min = adj_arr[node][i] + adj_arr[node][j] - adj_arr[i][j]
                 ins_pt = travel_list.index(j) #update insertion point
         #check the connection from the tail to the front
-        if adj_arr[node][travel_list[-1]] + adj_arr[node][travel_list[0]] - adj_arr[-1][0]< curr_min:
+        if adj_arr[node][travel_list[-1]] + adj_arr[node][travel_list[0]] - adj_arr[-1][0] < curr_min:
             curr_min = adj_arr[node][travel_list[-1]] + adj_arr[node][travel_list[0]] - adj_arr[-1][0]
             ins_pt = travel_list[0]
         #insert new node 
         travel_list.insert(ins_pt, node)
 
     #start with a triangle    
-    n = farthest_node()
-    travel_list.append(n)
-    n = farthest_node()
+    n = nearest_node()
     travel_list.append(n)
 
     #loop until all nodes visited
     while True:
         if len(travel_list) == linecount:
            break 
-        print(travel_list)
-        n = farthest_node()
+        n = nearest_node()
         if n == -1:
             continue
         closest_edge(n)
@@ -118,8 +118,7 @@ def main(argv):
     for opt, arg in opts:
         if opt == '-i':
                 parse_input(arg)
-                travel_list = farthest_insertion()
-                print(travel_list)
+                travel_list = nearest_insertion()
                 distance = calc_tour_len(arg, travel_list)
                 write_tour(distance,travel_list, arg + '.out') #temporarily naming it .out since .tour conflicts with solutions
         else:
