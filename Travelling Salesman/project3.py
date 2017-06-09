@@ -146,7 +146,7 @@ def main(argv):
     for opt, arg in opts:
         if opt == '-i':
                 parse_input(arg)
-                travel_list = nearest_neighbor()
+                travel_list = nearest_insertion()
                 distance = calc_tour_len(arg, travel_list)
                 write_tour(distance,travel_list, arg + '.out') #temporarily naming it .out since .tour conflicts with solutions
         else:
