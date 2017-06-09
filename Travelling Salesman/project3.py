@@ -64,14 +64,14 @@ def nearest_insertion():
     # Two modifications need to be made to make this furthest insertion. max_distance = 0  and adj_arr[node][ctr] > max_distance
     # Based on the example cases, it was found that nearest_insertion performed much better
     def nearest_node():
-        max_distance = sys.maxsize
+        min_distance = sys.maxsize
         near_node = -1 
         for node in travel_list:
             for ctr in range(linecount):
                 if ctr in travel_list:
                     pass 
-                elif adj_arr[node][ctr] < max_distance:
-                    max_distance = adj_arr[node][ctr]
+                elif adj_arr[node][ctr] < min_distance:
+                    min_distance = adj_arr[node][ctr]
                     near_node = ctr
         return near_node 
 
@@ -96,7 +96,7 @@ def nearest_insertion():
         #insert new node 
         travel_list.insert(ins_pt, node)
 
-    #start with a triangle    
+    #start 
     n = nearest_node()
     travel_list.append(n)
 
@@ -109,8 +109,36 @@ def nearest_insertion():
             continue
         closest_edge(n)
 
+    return travel_list
+
+def nearest_neighbor():
+    #start at node 0 
+    travel_list = [0]
+    
+    #find the nearest neighbor for a given node
+    #returns node that is closest
+    def find_nearest_neighbor(node):
+        curr_min = sys.maxsize 
+        for i in range(linecount):
+            if i in travel_list:
+               pass 
+            elif adj_arr[node][i] < curr_min:
+                curr_min = adj_arr[node][i]
+                idx = i
+        return idx
+
+    while True:
+        if len(travel_list) == linecount:
+            break
+        n = find_nearest_neighbor(travel_list[-1])
+        travel_list.append(n)
 
     return travel_list
+
+def 2_opt(ifile, travel_list):
+    distance = calc_tour_len(ifile, travel_list) 
+    for i in range(linecount):
+        for
 
 def main(argv):
     opts, args = getopt.getopt(argv,"n:i:")
@@ -118,7 +146,7 @@ def main(argv):
     for opt, arg in opts:
         if opt == '-i':
                 parse_input(arg)
-                travel_list = nearest_insertion()
+                travel_list = nearest_neighbor()
                 distance = calc_tour_len(arg, travel_list)
                 write_tour(distance,travel_list, arg + '.out') #temporarily naming it .out since .tour conflicts with solutions
         else:
