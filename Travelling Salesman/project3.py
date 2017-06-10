@@ -1,4 +1,3 @@
-
 import sys, getopt, linecache, math
 #import numpy as np
 
@@ -135,11 +134,6 @@ def nearest_neighbor():
 
     return travel_list
 
-def 2_opt(ifile, travel_list):
-    distance = calc_tour_len(ifile, travel_list) 
-    for i in range(linecount):
-        for
-
 def main(argv):
     opts, args = getopt.getopt(argv,"n:i:")
 
@@ -148,7 +142,7 @@ def main(argv):
                 parse_input(arg)
                 travel_list = nearest_insertion()
                 distance = calc_tour_len(arg, travel_list)
-                write_tour(distance,travel_list, arg + '.out') #temporarily naming it .out since .tour conflicts with solutions
+                write_tour(distance,travel_list, arg + '.tour') #temporarily naming it .out since .tour conflicts with solutions
         else:
             print("Usage: project3.py -i <inputfile>")
 
